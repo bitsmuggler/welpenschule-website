@@ -6,6 +6,7 @@ const imagemin = require('gulp-imagemin');
 const replace = require('gulp-replace');
 const argv = require('yargs').argv;
 const cleanCSS = require('gulp-clean-css');
+const sitemap = require('gulp-sitemap');
 
 
 let paths = {
@@ -20,6 +21,7 @@ let paths = {
     srcVendor: 'node_modules',
     dist: 'dist',
     distIndex: 'dist/index.html',
+    distHtml: 'dist/*.html',
     distCSS: 'dist/assets/css',
     distFont: 'dist/assets/css/font',
     distFonts: 'dist/assets/fonts',
@@ -36,9 +38,9 @@ gulp.task('clean:dist', () => {
 gulp.task('compress', () => {
     return gulp.src(paths.srcJS)
         .pipe(minify({
-            ext:{
-                src:'-debug.js',
-                min:'.js'
+            ext: {
+                src: '-debug.js',
+                min: '.js'
             },
             exclude: ['tasks'],
             ignoreFiles: ['.combo.js', '-min.js']
@@ -51,6 +53,17 @@ gulp.task('sass', () => {
         .pipe(sass().on('error', sass.logError))
         .pipe(gulp.dest(paths.distCSS));
 });
+
+gulp.task('generate:sitemap', function () {
+    return gulp.src(paths.distHtml, {
+        read: false
+    })
+        .pipe(sitemap({
+            siteUrl: argv.URL
+        }))
+        .pipe(gulp.dest(paths.distHtml));
+});
+
 
 gulp.task('copy:fonts', () => {
     return gulp.src(paths.srcFonts).pipe(gulp.dest(paths.distFonts));
@@ -72,13 +85,18 @@ gulp.task('copy:images', () =>
 
 gulp.task('copy:fontawesome', () => {
     return gulp.src('node_modules/font-awesome/css/font-awesome.css')
-                .pipe(cleanCSS({compatibility: 'ie8'}))
-                .pipe(gulp.dest(paths.distCSS));
+        .pipe(cleanCSS({compatibility: 'ie8'}))
+        .pipe(gulp.dest(paths.distCSS));
 });
 
 gulp.task('copy:html', () => {
     return gulp.src('*.html').pipe(gulp.dest(paths.dist));
 });
+
+gulp.task('copy:xml', () => {
+    return gulp.src('*.xml').pipe(gulp.dest(paths.dist));
+});
+
 
 gulp.task('patch', () => {
     return gulp.src([paths.distJS + '/main.js'])
@@ -89,5 +107,4 @@ gulp.task('patch', () => {
 });
 
 
-
-gulp.task('build', gulp.series('clean:dist','sass', 'compress', 'copy:font', 'copy:fonts', 'copy:images', 'copy:fontawesome', 'copy:html', 'patch'));
+gulp.task('build', gulp.series('clean:dist', 'sass', 'compress', 'generate:sitemap', 'copy:font', 'copy:fonts', 'copy:images', 'copy:fontawesome', 'copy:html', 'copy:xml', 'patch'));
