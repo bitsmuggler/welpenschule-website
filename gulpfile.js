@@ -56,7 +56,7 @@ gulp.task('sass', () => {
 
 gulp.task('generate:sitemap', function () {
     return gulp.src(paths.distHtml, {
-        read: false
+        read: true
     })
         .pipe(sitemap({
             siteUrl: argv.URL
