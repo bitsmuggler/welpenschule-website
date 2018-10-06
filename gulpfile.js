@@ -51,6 +51,7 @@ gulp.task('compress', () => {
 gulp.task('sass', () => {
     return gulp.src(paths.srcSCSS)
         .pipe(sass().on('error', sass.logError))
+         .pipe(cleanCSS({compatibility: 'ie8'}))
         .pipe(gulp.dest(paths.distCSS));
 });
 
@@ -97,7 +98,6 @@ gulp.task('copy:xml', () => {
     return gulp.src('*.xml').pipe(gulp.dest(paths.dist));
 });
 
-
 gulp.task('patch', () => {
     return gulp.src([paths.distJS + '/main.js'])
         .pipe(replace('SERVICE_ID', argv.SERVICE_ID))
@@ -107,4 +107,4 @@ gulp.task('patch', () => {
 });
 
 
-gulp.task('build', gulp.series('clean:dist', 'sass', 'compress', 'generate:sitemap', 'copy:font', 'copy:fonts', 'copy:images', 'copy:fontawesome', 'copy:html', 'copy:xml', 'patch'));
+gulp.task('build', gulp.series('clean:dist', 'sass', 'compress', 'generate:sitemap', 'copy:font', 'copy:fonts', 'copy:images', 'copy:html', 'copy:xml', 'patch'));
