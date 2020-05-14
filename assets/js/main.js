@@ -105,7 +105,11 @@
             $("#anmeldung-intro").hide();
             $("#anmeldungsuccess").show();
 
-            ga('send', 'pageview', '/anmeldung');
+            try {
+                ga('send', 'pageview', '/anmeldung');
+            } catch(e) {
+                console.error(e);
+            }
         }).fail(function (error) {
             alert('Oops... ' + JSON.stringify(error));
         });
