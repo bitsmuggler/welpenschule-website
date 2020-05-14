@@ -104,6 +104,8 @@
             $("#anmeldung").hide();
             $("#anmeldung-intro").hide();
             $("#anmeldungsuccess").show();
+
+            ga('send', 'pageview', '/anmeldung');
         }).fail(function (error) {
             alert('Oops... ' + JSON.stringify(error));
         });
